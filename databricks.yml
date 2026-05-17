@@ -27,7 +27,6 @@ targets:
     mode: development
     workspace:
       host: https://adb-4206962778623078.18.azuredatabricks.net
-      profile: AshishSongara
     variables:
       catalog: sandbox
       schema: ashish
@@ -37,7 +36,6 @@ targets:
     mode: production
     workspace:
       host: https://adb-4206962778623078.18.azuredatabricks.net
-      profile: AshishSongara
     variables:
       catalog: uat
       schema: nrl_flatten
@@ -47,7 +45,6 @@ targets:
     mode: production
     workspace:
       host: https://adb-4206962778623078.18.azuredatabricks.net
-      profile: AshishSongara
     variables:
       catalog: nrl_datalakehouse_prd
       schema: nrl_flatten
