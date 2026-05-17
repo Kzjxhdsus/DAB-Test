@@ -1,0 +1,65 @@
+resources:
+  jobs:
+    nrl_flattening_etl_job:
+      name: "[${bundle.target}] NRL Flattening ETL"
+      description: "Flattens source XML bronze data into delta tables"
+
+      # ── Job-level parameters ─────────────────────────────────────────────────
+      # Set these when triggering the job (UI → "Run now with different parameters",
+      # or CLI → databricks bundle run nrl_flattening_etl_job -p config_name=all).
+      # All notebook tasks receive them automatically via dbutils.widgets.get().
+      parameters:
+        - name: config_name
+          default: "all"
+        - name: competition_id
+          default: "111"
+        - name: season
+          default: "2026"
+
+      job_clusters:
+        - job_cluster_key: flatten_cluster
+          new_cluster:
+            spark_version: "17.3.x-scala2.13"
+            node_type_id: ${var.node_type}
+            num_workers: ${var.num_workers}
+            azure_attributes:
+              availability: SPOT_WITH_FALLBACK_AZURE
+
+      tasks:
+        - task_key: Initialize_Log_Tables
+          description: "Create audit and error log tables before ForEach fans out"
+          job_cluster_key: flatten_cluster
+          notebook_task:
+            notebook_path: ../task_1_init_log_tables.py
+
+        - task_key: Discover_Configs
+          description: "Query audit log to find which configs need processing; publishes task value 'configs' for the ForEach"
+          depends_on:
+            - task_key: Initialize_Log_Tables
+          job_cluster_key: flatten_cluster
+          notebook_task:
+            notebook_path: ../task_2_discover_configs.py
+
+        - task_key: Flatten_Configs
+          description: "ForEach — runs runner_variant.py once per config/competition/season combination in parallel"
+          depends_on:
+            - task_key: Discover_Configs
+          for_each_task:
+            inputs: "{{tasks.Discover_Configs.values.configs}}"
+            concurrency: 5
+            task:
+              task_key: run_flattening
+              job_cluster_key: flatten_cluster
+              notebook_task:
+                notebook_path: ../runner_variant.py
+                base_parameters:
+                  foreach_input: "{{input}}"
+
+      schedule:
+        quartz_cron_expression: "0 0 2 * * ?"
+        timezone_id: "UTC"
+        pause_status: PAUSED
+
+      email_notifications:
+        on_failure:
+          - ${var.notification_email}

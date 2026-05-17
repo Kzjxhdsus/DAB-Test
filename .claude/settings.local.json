@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \":*)",
+      "Bash(python -c \"lines=open\\(''flatten_framework.py''\\).readlines\\(\\); print\\(len\\(lines\\)\\)\")",
+      "Bash(python3 -c \":*)",
+      "Bash(pandoc \"C:\\\\Users\\\\AshishSongara\\\\Downloads\\\\Low_Complexity_API_Flattened_Structures.docx\" -t plain)",
+      "Bash(python \"C:\\\\Users\\\\AshishSongara\\\\AppData\\\\Roaming\\\\Claude\\\\local-agent-mode-sessions\\\\skills-plugin\\\\abad75d5-3a6b-4085-87bc-75ab8583cfd2\\\\c09450ce-20b0-4a8d-ac85-05d935993c22\\\\skills\\\\docx\\\\scripts\\\\office\\\\unpack.py\" \"C:\\\\Users\\\\AshishSongara\\\\Downloads\\\\Low_Complexity_API_Flattened_Structures.docx\" \"C:\\\\Temp\\\\docx_unpacked\")",
+      "Bash(python3 -c \"import pdfplumber; pdf = pdfplumber.open\\(r'C:\\\\Users\\\\AshishSongara\\\\Downloads\\\\NRL_Table_Comparison.pdf'\\); print\\(f'Pages: {len\\(pdf.pages\\)}'\\); print\\(pdf.pages[0].extract_text\\(\\)[:3000]\\)\")",
+      "Bash(Get-ChildItem -Recurse -Directory)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Sort-Object)"
+    ]
+  }
+}

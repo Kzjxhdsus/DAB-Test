@@ -1,0 +1,70 @@
+name: Deploy — Prod
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type 'deploy to production' to confirm"
+        required: true
+        type: string
+      reason:
+        description: "Reason for this production deployment"
+        required: true
+        type: string
+
+concurrency:
+  group: deploy-prod
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  validate-confirmation:
+    name: Validate confirmation phrase
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check confirmation phrase
+        run: |
+          if [ "${{ github.event.inputs.confirm }}" != "deploy to production" ]; then
+            echo "❌ Confirmation phrase mismatch. Expected: 'deploy to production'"
+            exit 1
+          fi
+          echo "✅ Confirmation phrase accepted."
+
+  deploy:
+    name: Deploy to prod
+    runs-on: ubuntu-latest
+    needs: validate-confirmation
+    environment: prod
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Log deployment
+        run: |
+          echo "Deploying to prod"
+          echo "Triggered by : ${{ github.actor }}"
+          echo "Reason       : ${{ github.event.inputs.reason }}"
+          echo "Commit SHA   : ${{ github.sha }}"
+
+      - name: Deploy bundle to prod
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: |
+          databricks bundle validate -t prod
+          databricks bundle deploy -t prod --auto-approve
+
+      - name: Tag deployment
+        run: |
+          TAG="deploy/prod-$(date -u +'%Y-%m-%dT%H-%M-%S')"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "Production deployment by ${{ github.actor }} — ${{ github.event.inputs.reason }}"
+          git push origin "$TAG"
+          echo "✅ Tagged: $TAG"

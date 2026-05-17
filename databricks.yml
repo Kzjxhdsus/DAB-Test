@@ -1,0 +1,54 @@
+bundle:
+  name: nrl-flattening
+
+include:
+  - resources/*.yml
+
+variables:
+  catalog:
+    description: "Unity Catalog catalog name"
+    default: "sandbox"
+  schema:
+    description: "Unity Catalog schema name"
+    default: "ashish"
+  num_workers:
+    description: "Number of cluster workers"
+    default: "2"
+  node_type:
+    description: "Cluster node type"
+    default: "Standard_D4ds_v4"
+  notification_email:
+    description: "Failure notification recipient"
+    default: "ashish.songara@xponent.ai"
+
+targets:
+  dev:
+    default: true
+    mode: development
+    workspace:
+      host: https://adb-4206962778623078.18.azuredatabricks.net
+      profile: AshishSongara
+    variables:
+      catalog: sandbox
+      schema: ashish
+      num_workers: "2"
+
+  uat:
+    mode: production
+    workspace:
+      host: https://adb-4206962778623078.18.azuredatabricks.net
+      profile: AshishSongara
+    variables:
+      catalog: uat
+      schema: nrl_flatten
+      num_workers: "3"
+
+  prod:
+    mode: production
+    workspace:
+      host: https://adb-4206962778623078.18.azuredatabricks.net
+      profile: AshishSongara
+    variables:
+      catalog: nrl_datalakehouse_prd
+      schema: nrl_flatten
+      num_workers: "5"

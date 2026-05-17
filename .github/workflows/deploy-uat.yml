@@ -1,0 +1,37 @@
+name: Deploy — UAT
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Reason for this UAT deployment"
+        required: true
+        type: string
+
+concurrency:
+  group: deploy-uat
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: Deploy to UAT
+    runs-on: ubuntu-latest
+    environment: uat
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Databricks CLI
+        uses: databricks/setup-cli@main
+
+      - name: Log deployment reason
+        run: echo "Deploying to UAT — Reason: ${{ github.event.inputs.reason }}"
+
+      - name: Deploy bundle to UAT
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+        run: |
+          databricks bundle validate -t uat
+          databricks bundle deploy -t uat --auto-approve
