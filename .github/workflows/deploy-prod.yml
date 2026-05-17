@@ -1,4 +1,4 @@
-name: Deploy — Prod
+name: Deploy - Prod
 
 on:
   workflow_dispatch:
@@ -48,9 +48,9 @@ jobs:
       - name: Log deployment
         run: |
           echo "Deploying to prod"
-          echo "Triggered by : ${{ github.actor }}"
-          echo "Reason       : ${{ github.event.inputs.reason }}"
-          echo "Commit SHA   : ${{ github.sha }}"
+          echo "Triggered by: ${{ github.actor }}"
+          echo "Reason: ${{ github.event.inputs.reason }}"
+          echo "Commit SHA: ${{ github.sha }}"
 
       - name: Deploy bundle to prod
         env:

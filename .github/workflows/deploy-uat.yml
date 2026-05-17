@@ -1,4 +1,4 @@
-name: Deploy — UAT
+name: Deploy - UAT
 
 on:
   workflow_dispatch:
@@ -26,7 +26,7 @@ jobs:
         uses: databricks/setup-cli@main
 
       - name: Log deployment reason
-        run: echo "Deploying to UAT — Reason: ${{ github.event.inputs.reason }}"
+        run: echo "Deploying to UAT - Reason: ${{ github.event.inputs.reason }}"
 
       - name: Deploy bundle to UAT
         env:

@@ -1,4 +1,4 @@
-name: CI — Bundle Validate
+name: CI - Bundle Validate
 
 on:
   pull_request:
